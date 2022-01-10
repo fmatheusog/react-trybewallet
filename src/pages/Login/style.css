@@ -26,3 +26,8 @@
   flex-direction: column;
   margin-bottom: 10px;
 }
+
+.login-inputs button {
+  background-color: green;
+  color: white;
+}

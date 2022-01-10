@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(true);
 
   useEffect(() => {
-    const isValid = [email, password].every((input) => input !== '');
+    const isValid = [emailInput, passwordInput].every((input) => input !== '');
 
     if (isValid === true) setIsLoginButtonDisabled(false);
     else setIsLoginButtonDisabled(true);
-  }, [email, password]);
+  }, [emailInput, passwordInput]);
 
   return (
     <div id="login-form">
@@ -23,8 +23,8 @@ const Login = () => {
             type="text"
             id="email-input"
             data-testid="email-input"
-            value={ email }
-            onChange={ (e) => setEmail(e.target.value) }
+            value={ emailInput }
+            onChange={ (e) => setEmailInput(e.target.value) }
           />
         </label>
 
@@ -34,8 +34,8 @@ const Login = () => {
             type="password"
             id="password-input"
             data-testid="email-input"
-            value={ password }
-            onChange={ (e) => setPassword(e.target.value) }
+            value={ passwordInput }
+            onChange={ (e) => setPasswordInput(e.target.value) }
           />
         </label>
 
