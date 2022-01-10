@@ -1,20 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import './style.css';
+
+import { loginAction } from '../../actions';
 
 const Login = () => {
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(true);
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   useEffect(() => {
-    const isValid = [emailInput, passwordInput].every((input) => input !== '');
+    const SIX = 6;
+    const isValid = [emailInput, passwordInput].every((input) => input.length >= SIX);
 
     if (isValid === true) setIsLoginButtonDisabled(false);
     else setIsLoginButtonDisabled(true);
   }, [emailInput, passwordInput]);
 
   return (
-    <div id="login-form">
+    <form
+      id="login-form"
+      onSubmit={ () => {
+        dispatch(loginAction(emailInput));
+        history.push('/carteira');
+      } }
+    >
       <div className="login-inputs">
         <h3>Trybewallet - Login</h3>
         <label htmlFor="email-input">
@@ -47,7 +61,7 @@ const Login = () => {
         </button>
       </div>
 
-    </div>
+    </form>
   );
 };
 
