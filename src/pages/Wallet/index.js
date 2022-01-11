@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { addExpenseAction } from '../../actions';
 import Header from '../../components/Header';
 
 const Wallet = () => {
-  const [valueInput, setValueInput] = useState(0);
+  const [valueInput, setValueInput] = useState('');
   const [descriptionInput, setDescriptionInput] = useState('');
   const [currencyInput, setCurrencyInput] = useState('');
   const [methodInput, setMethodInput] = useState('');
   const [tagInput, setTagInput] = useState('');
+  const [addButtonDisabled, setAddButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    const regex = /^[0-9]*$/;
+    if (regex.test(valueInput) === false || valueInput === '') setAddButtonDisabled(true);
+    else setAddButtonDisabled(false);
+  }, [valueInput]);
 
   const dispatch = useDispatch();
 
@@ -49,15 +56,18 @@ const Wallet = () => {
 
           Moeda:
           <select
+            value={ currencyInput }
             data-testid="currency-input"
             id="currency-input"
             onChange={ (e) => setCurrencyInput(e.target.value) }
           >
-            <option>Teste</option>
+            <option> </option>
+            <option value="Teste">Teste</option>
           </select>
 
           Método de pagamento:
           <select
+            value={ methodInput }
             data-testid="method-input"
             id="method-input"
             onChange={ (e) => setMethodInput(e.target.value) }
@@ -70,19 +80,21 @@ const Wallet = () => {
 
           Categoria:
           <select
+            value={ tagInput }
             data-testid="tag-input"
             id="tag-input"
             onChange={ (e) => setTagInput(e.target.value) }
           >
             <option> </option>
-            <option>Teste</option>
+            <option value="teste">Teste</option>
           </select>
 
           <button
             type="button"
+            disabled={ addButtonDisabled }
             onClick={ () => {
               dispatch(addExpenseAction({
-                value: valueInput,
+                value: Number(valueInput),
                 description: descriptionInput,
                 currency: currencyInput,
                 method: methodInput,
