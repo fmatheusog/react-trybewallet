@@ -1,0 +1,29 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  align-items: center;
+  background-color: lightgreen;
+  display: flex;
+  flex-direction: row;
+  height: 20vh;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.header-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-trybe {
+  color: green;
+  font-size: 1.5em;
+}
+
+.header-currency {
+  display: flex;
+}
