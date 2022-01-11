@@ -15,19 +15,18 @@ const Login = () => {
 
   useEffect(() => {
     const SIX = 6;
-    const isValid = [emailInput, passwordInput].every((input) => input.length >= SIX);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (isValid === true) setIsLoginButtonDisabled(false);
+    const validEmail = emailRegex.test(emailInput);
+    const validPassword = passwordInput.length >= SIX;
+
+    if (validEmail === true && validPassword === true) setIsLoginButtonDisabled(false);
     else setIsLoginButtonDisabled(true);
   }, [emailInput, passwordInput]);
 
   return (
-    <form
-      id="login-form"
-      onSubmit={ () => {
-        dispatch(loginAction(emailInput));
-        history.push('/carteira');
-      } }
+    <div
+      className="login-form"
     >
       <div className="login-inputs">
         <h3>Trybewallet - Login</h3>
@@ -47,7 +46,7 @@ const Login = () => {
           <input
             type="password"
             id="password-input"
-            data-testid="email-input"
+            data-testid="password-input"
             value={ passwordInput }
             onChange={ (e) => setPasswordInput(e.target.value) }
           />
@@ -56,12 +55,16 @@ const Login = () => {
         <button
           type="submit"
           disabled={ isLoginButtonDisabled }
+          onClick={ () => {
+            dispatch(loginAction(emailInput));
+            history.push('/carteira');
+          } }
         >
-          Login
+          Entrar
         </button>
       </div>
 
-    </form>
+    </div>
   );
 };
 

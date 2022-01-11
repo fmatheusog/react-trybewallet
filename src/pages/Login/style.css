@@ -4,10 +4,10 @@
   padding: 0;
 }
 
-#login-form {
+.login-form {
   display: flex;
   justify-content: center;
-  margin: 50px 50px;
+  margin: 50px;
 }
 
 .login-inputs {
