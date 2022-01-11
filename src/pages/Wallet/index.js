@@ -20,7 +20,7 @@ const Wallet = () => {
   const dispatch = useDispatch();
 
   const cleanInputs = () => {
-    setValueInput(0);
+    setValueInput('');
     setDescriptionInput('');
     setCurrencyInput('');
     setMethodInput('');
