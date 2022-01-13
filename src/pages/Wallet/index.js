@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { addExpenseAction } from '../../actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { addExpenseAction, getCurrenciesThunk } from '../../actions';
 import Header from '../../components/Header';
 
 const Wallet = () => {
@@ -11,13 +11,19 @@ const Wallet = () => {
   const [tagInput, setTagInput] = useState('');
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
 
+  const dispatch = useDispatch();
+
+  const currencies = useSelector((state) => state.wallet.currencies);
+
+  useEffect(() => {
+    dispatch(getCurrenciesThunk());
+  }, [dispatch]);
+
   useEffect(() => {
     const regex = /^[0-9]*$/;
     if (regex.test(valueInput) === false || valueInput === '') setAddButtonDisabled(true);
     else setAddButtonDisabled(false);
   }, [valueInput]);
-
-  const dispatch = useDispatch();
 
   const cleanInputs = () => {
     setValueInput('');
@@ -62,7 +68,9 @@ const Wallet = () => {
             onChange={ (e) => setCurrencyInput(e.target.value) }
           >
             <option> </option>
-            <option value="Teste">Teste</option>
+            { Object.keys(currencies).map((currencie) => (
+              <option key={ currencie } value={ currencie }>{ currencie }</option>
+            )) }
           </select>
 
           Método de pagamento:
@@ -72,7 +80,7 @@ const Wallet = () => {
             id="method-input"
             onChange={ (e) => setMethodInput(e.target.value) }
           >
-            <option value=""> </option>
+            <option> </option>
             <option value="Dinheiro">Dinheiro</option>
             <option value="Cartão de débito">Cartão de débito</option>
             <option value="Cartão de crédito">Cartão de crédito</option>
@@ -86,7 +94,11 @@ const Wallet = () => {
             onChange={ (e) => setTagInput(e.target.value) }
           >
             <option> </option>
-            <option value="teste">Teste</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Lazer">Lazer</option>
+            <option value="Trabalho">Trabalho</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Saúde">Saúde</option>
           </select>
 
           <button
@@ -101,6 +113,7 @@ const Wallet = () => {
                 tag: tagInput,
               }));
               cleanInputs();
+              dispatch(getCurrenciesThunk());
             } }
           >
             Adicionar despesa

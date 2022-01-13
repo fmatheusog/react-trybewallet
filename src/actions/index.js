@@ -1,5 +1,8 @@
+import fetchAPI from '../services/api';
+
 export const LOGIN = 'LOGIN';
 export const ADD_EXPENSE = 'ADD_EXPENSE';
+export const GET_CURRENCIES = 'GET_CURRENCIES';
 
 let idCounter = 0;
 
@@ -19,4 +22,16 @@ export const addExpenseAction = (expense) => {
   idCounter += 1;
 
   return action;
+};
+
+export const getCurrencies = (currencies) => (
+  {
+    type: GET_CURRENCIES,
+    currencies,
+  }
+);
+
+export const getCurrenciesThunk = () => (dispatch) => {
+  fetchAPI()
+    .then((response) => dispatch(getCurrencies(response)));
 };
