@@ -2,6 +2,7 @@ import fetchAPI from '../services/api';
 
 export const LOGIN = 'LOGIN';
 export const ADD_EXPENSE = 'ADD_EXPENSE';
+export const DELETE_EXPENSE = 'DELETE_EXPENSE';
 export const GET_CURRENCIES = 'GET_CURRENCIES';
 
 let idCounter = 0;
@@ -23,6 +24,13 @@ export const addExpenseAction = (expense) => {
 
   return action;
 };
+
+export const deleteExpense = (id) => (
+  {
+    type: DELETE_EXPENSE,
+    id,
+  }
+);
 
 export const getCurrencies = (currencies) => (
   {
