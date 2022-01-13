@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addExpenseAction, getCurrenciesThunk } from '../../actions';
 import Header from '../../components/Header';
+import ExpensesTable from '../../components/ExpensesTable';
 
 const Wallet = () => {
   const [valueInput, setValueInput] = useState('');
@@ -68,9 +69,16 @@ const Wallet = () => {
             onChange={ (e) => setCurrencyInput(e.target.value) }
           >
             <option> </option>
-            { Object.keys(currencies).map((currencie) => (
-              <option key={ currencie } value={ currencie }>{ currencie }</option>
-            )) }
+            { Object.keys(currencies)
+              .filter((currencie) => currencie !== 'USDT').map((currencie) => (
+                <option
+                  key={ currencie }
+                  value={ currencie }
+                  data-testid={ currencie }
+                >
+                  { currencie }
+                </option>
+              )) }
           </select>
 
           Método de pagamento:
@@ -105,20 +113,22 @@ const Wallet = () => {
             type="button"
             disabled={ addButtonDisabled }
             onClick={ () => {
+              dispatch(getCurrenciesThunk());
               dispatch(addExpenseAction({
                 value: Number(valueInput),
                 description: descriptionInput,
                 currency: currencyInput,
                 method: methodInput,
                 tag: tagInput,
+                exchangeRates: currencies,
               }));
               cleanInputs();
-              dispatch(getCurrenciesThunk());
             } }
           >
             Adicionar despesa
           </button>
         </div>
+        <ExpensesTable />
       </div>
     </>
   );
