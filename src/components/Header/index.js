@@ -1,8 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import './style.css';
 
-const Header = () => {
+const Header = (props) => {
+  const { total } = props;
+
   const email = useSelector((state) => state.user.email);
 
   return (
@@ -16,11 +19,15 @@ const Header = () => {
         </span>
       </div>
       <div className="header-currency">
-        <span data-testid="total-field">0</span>
+        <span data-testid="total-field">{ total.toFixed(2) }</span>
         <span data-testid="header-currency-field">BRL</span>
       </div>
     </div>
   );
+};
+
+Header.propTypes = {
+  total: PropTypes.number.isRequired,
 };
 
 export default Header;

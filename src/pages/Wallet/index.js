@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addExpenseAction, getCurrenciesThunk } from '../../actions';
+import { addExpenseAction, deleteExpenseAction, getCurrenciesThunk } from '../../actions';
 import Header from '../../components/Header';
-import ExpensesTable from '../../components/ExpensesTable';
 
 const Wallet = () => {
   const [valueInput, setValueInput] = useState('');
@@ -11,20 +10,12 @@ const Wallet = () => {
   const [methodInput, setMethodInput] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
+  const [total, setTotal] = useState(0);
 
   const dispatch = useDispatch();
 
   const currencies = useSelector((state) => state.wallet.currencies);
-
-  useEffect(() => {
-    dispatch(getCurrenciesThunk());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const regex = /^[0-9]*$/;
-    if (regex.test(valueInput) === false || valueInput === '') setAddButtonDisabled(true);
-    else setAddButtonDisabled(false);
-  }, [valueInput]);
+  const expenses = useSelector((state) => state.wallet.expenses);
 
   const cleanInputs = () => {
     setValueInput('');
@@ -34,9 +25,30 @@ const Wallet = () => {
     setTagInput('');
   };
 
+  useEffect(() => {
+    setCurrencyInput(Object.keys(currencies)[0]);
+  }, [currencies]);
+
+  useEffect(() => {
+    dispatch(getCurrenciesThunk());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const totalReducer = (acc, current) => (
+      acc + current.value * current.exchangeRates[current.currency].ask);
+    const totalResult = expenses.reduce(totalReducer, 0);
+    setTotal(Number(totalResult));
+  }, [expenses]);
+
+  useEffect(() => {
+    const regex = /^[0-9]*$/;
+    if (regex.test(valueInput) === false || valueInput === '') setAddButtonDisabled(true);
+    else setAddButtonDisabled(false);
+  }, [valueInput]);
+
   return (
     <>
-      <Header />
+      <Header total={ total } />
       <div className="wallet-page">
         <div className="expenses-add-form">
           <label htmlFor="value-input">
@@ -61,25 +73,26 @@ const Wallet = () => {
             />
           </label>
 
-          Moeda:
-          <select
-            value={ currencyInput }
-            data-testid="currency-input"
-            id="currency-input"
-            onChange={ (e) => setCurrencyInput(e.target.value) }
-          >
-            <option> </option>
-            { Object.keys(currencies)
-              .filter((currencie) => currencie !== 'USDT').map((currencie) => (
-                <option
-                  key={ currencie }
-                  value={ currencie }
-                  data-testid={ currencie }
-                >
-                  { currencie }
-                </option>
-              )) }
-          </select>
+          <label htmlFor="currency-input">
+            Moeda:
+            <select
+              value={ currencyInput }
+              data-testid="currency-input"
+              id="currency-input"
+              onChange={ (e) => setCurrencyInput(e.target.value) }
+            >
+              { Object.keys(currencies)
+                .filter((currency) => currency !== 'USDT').map((currency) => (
+                  <option
+                    key={ currency }
+                    value={ currency }
+                    data-testid={ currency }
+                  >
+                    { currency }
+                  </option>
+                )) }
+            </select>
+          </label>
 
           Método de pagamento:
           <select
@@ -115,7 +128,7 @@ const Wallet = () => {
             onClick={ () => {
               dispatch(getCurrenciesThunk());
               dispatch(addExpenseAction({
-                value: Number(valueInput),
+                value: valueInput,
                 description: descriptionInput,
                 currency: currencyInput,
                 method: methodInput,
@@ -128,7 +141,61 @@ const Wallet = () => {
             Adicionar despesa
           </button>
         </div>
-        <ExpensesTable />
+        <table className="expenses-table">
+          <thead>
+            <tr>
+              { ['Descrição',
+                'Tag',
+                'Método de pagamento',
+                'Valor',
+                'Moeda',
+                'Câmbio utilizado',
+                'Valor convertido',
+                'Moeda de conversão',
+                'Editar/Excluir'].map((cat) => <th key={ cat }>{ cat }</th>) }
+            </tr>
+          </thead>
+          {
+            expenses.map((expense) => (
+              <tbody key={ expense.id }>
+                <tr>
+                  <td>{ expense.description }</td>
+                  <td>{ expense.tag }</td>
+                  <td>{ expense.method }</td>
+                  <td>{ expense.value }</td>
+                  <td>{ expense.exchangeRates[expense.currency].name }</td>
+                  <td>
+                    { Number(expense.exchangeRates[expense.currency].ask).toFixed(2) }
+                  </td>
+                  <td>
+                    {
+                      Number(expense.value * expense.exchangeRates[expense.currency].ask)
+                        .toFixed(2)
+                    }
+                  </td>
+                  <td>Real</td>
+                  <td>
+                    <button
+                      type="button"
+                      data-testid="edit-btn"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="delete-btn"
+                      id={ expense.id }
+                      onClick={ ({
+                        target: { id } }) => dispatch(deleteExpenseAction(Number(id))) }
+                    >
+                      Excluir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            ))
+          }
+        </table>
       </div>
     </>
   );
